@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/godot-cpp/include",
+                "${workspaceFolder}/godot-cpp/gen/include"
+            ],
+            "defines": ["GODOT_CPP"],
+            "compilerPath": "C:/TDM-GCC-64/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
