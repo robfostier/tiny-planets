@@ -2,7 +2,7 @@
 import os
 import sys
 
-libname = "libtest"
+libname = "tinyplanets"
 projectdir = "tiny-planets"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
@@ -13,7 +13,7 @@ localEnv = Environment(tools=["default"], PLATFORM="")
 # Modify the example file as needed and uncomment the line below or
 # manually specify the build_profile parameter when running SCons.
 
-localEnv["build_profile"] = "build_profile.json"
+# localEnv["build_profile"] = "build_profile.json"
 
 customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
@@ -34,7 +34,7 @@ Run the following command to download godot-cpp:
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
-env.Append(CPPPATH=["src/"])
+env.Append(CPPPATH=["src/", "include/"])
 sources = Glob("src/*.cpp")
 
 if env["target"] in ["editor", "template_debug"]:
@@ -51,7 +51,7 @@ suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
 lib_filename = "{}{}{}{}".format(env.subst('$SHLIBPREFIX'), libname, suffix, env.subst('$SHLIBSUFFIX'))
 
 library = env.SharedLibrary(
-    "bin/{}/{}".format(env['platform'], lib_filename),
+    "tiny-planets/bin/{}/{}".format(env['platform'], lib_filename),
     source=sources,
 )
 
@@ -61,4 +61,4 @@ library = env.SharedLibrary(
 
 # default_args = [library, copy]
 
-# Default(library)
+Default(library)
