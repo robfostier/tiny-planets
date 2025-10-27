@@ -21,13 +21,7 @@ Planet::Planet()
     mesh.instantiate();
     mesh_instance = memnew(godot::MeshInstance3D);
     mesh_instance->set_mesh(mesh);
-    // add_child(mesh_instance);
-}
-
-void Planet::_ready()
-{
     add_child(mesh_instance);
-    mesh_instance->set_visible(true);
 }
 
 void Planet::set_radius(float r)
