@@ -16,13 +16,11 @@ func _process(delta: float) -> void:
 
 [sub_resource type="Environment" id="Environment_7dm0k"]
 background_mode = 1
-ambient_light_source = 1
-reflected_light_source = 1
+background_color = Color(0.23031491, 0.23031494, 0.23031494, 1)
+ambient_light_color = Color(0.23137255, 0.23137255, 0.23137255, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7dm0k"]
-albedo_color = Color(0.11361287, 0.3764041, 0.7167841, 1)
-roughness = 0.6
-stencil_flags = 2
+albedo_color = Color(0.59905666, 1.4318898e-06, 4.3317675e-07, 1)
 
 [node name="Node3D" type="Node3D"]
 script = SubResource("GDScript_7dm0k")
@@ -41,5 +39,5 @@ shadow_normal_bias = 0.1
 directional_shadow_blend_splits = true
 
 [node name="Planet" type="Planet" parent="."]
-resolution = 128
+resolution = 100
 material = SubResource("StandardMaterial3D_7dm0k")
