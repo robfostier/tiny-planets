@@ -1,21 +1,21 @@
 #ifndef TERRAIN_FILTER_ARRAY_HPP
 #define TERRAIN_FILTER_ARRAY_HPP
 
-#include <vector>
+#include "terrain_filter_resource.hpp"
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include "terrain_filter_resource.hpp"
+#include <vector>
 
 class TerrainFilterArray : public Resource {
     GDCLASS(TerrainFilterArray, Resource);
 
-public:
+  public:
     Array filters;
 
-protected:
+  protected:
     static void _bind_methods();
 
-public:
+  public:
     void set_filters(const Array &arr);
     Array get_filters() const { return filters; }
 

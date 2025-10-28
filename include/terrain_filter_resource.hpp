@@ -1,23 +1,26 @@
 #ifndef TERRAIN_FILTER_RESOURCE_HPP
 #define TERRAIN_FILTER_RESOURCE_HPP
 
-#include <vector>
+#include "vertex_data.hpp"
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include "vertex_data.hpp"
+#include <vector>
 
-class TerrainFilterResource : public Resource
-{
+class TerrainFilterResource : public Resource {
     GDCLASS(TerrainFilterResource, Resource);
 
-protected:
+  protected:
+    bool b_is_active = true;
     static void _bind_methods();
 
-public:
+  public:
     virtual ~TerrainFilterResource() = default;
 
-    virtual void apply(std::vector<VertexData> &vertices, std::vector<int> &indices) = 0;
-};
+    void set_activity(const bool &activity);
+    bool get_activity(void) const { return b_is_active; }
 
+    virtual void apply(std::vector<VertexData> &vertices,
+                       std::vector<int> &indices) = 0;
+};
 
 #endif

@@ -1,7 +1,6 @@
 #include "planet.hpp"
 
-void Planet::_bind_methods()
-{
+void Planet::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_radius", "radius"), &Planet::set_radius);
     ClassDB::bind_method(D_METHOD("get_radius"), &Planet::get_radius);
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius"), "set_radius", "get_radius");
@@ -10,7 +9,7 @@ void Planet::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_resolution"), &Planet::get_resolution);
     ADD_PROPERTY(PropertyInfo(Variant::INT, "resolution", PROPERTY_HINT_RANGE, "2,256,1"), "set_resolution", "get_resolution");
 
-    ClassDB::bind_method(D_METHOD("set_terrain_filter_array", "terrain_filter_array"), &Planet::set_terrain_filter_array);
+    ClassDB::bind_method( D_METHOD("set_terrain_filter_array", "terrain_filter_array"), &Planet::set_terrain_filter_array);
     ClassDB::bind_method(D_METHOD("get_terrain_filter_array"), &Planet::get_terrain_filter_array);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "terrain_filter_array", PROPERTY_HINT_RESOURCE_TYPE, "TerrainFilterArray"), "set_terrain_filter_array", "get_terrain_filter_array");
 
@@ -21,8 +20,7 @@ void Planet::_bind_methods()
     ClassDB::bind_method(D_METHOD("generate"), &Planet::generate);
 }
 
-Planet::Planet()
-{
+Planet::Planet() {
     mesh.instantiate();
     mesh_instance = memnew(godot::MeshInstance3D);
     mesh_instance->set_mesh(mesh);
@@ -31,29 +29,26 @@ Planet::Planet()
 
 void Planet::_notification(int what) {
     switch (what) {
-        case NOTIFICATION_READY:
-        {
-            generate();
-            break;
-        }
-        default: break;
+    case NOTIFICATION_READY: {
+        generate();
+        break;
+    }
+    default:
+        break;
     }
 }
 
-void Planet::set_radius(float r)
-{
+void Planet::set_radius(float r) {
     radius = r;
     generate();
 }
 
-void Planet::set_resolution(int r)
-{
+void Planet::set_resolution(int r) {
     resolution = MAX(2, r);
     generate();
 }
 
-void Planet::set_terrain_filter_array(const Ref<TerrainFilterArray> &arr)
-{
+void Planet::set_terrain_filter_array(const Ref<TerrainFilterArray> &arr) {
     if (terrain_filters_array.is_valid()) {
         terrain_filters_array->disconnect("changed", Callable(this, "generate"));
     }
@@ -69,25 +64,21 @@ void Planet::set_terrain_filter_array(const Ref<TerrainFilterArray> &arr)
     generate();
 }
 
-void Planet::set_material(const Ref<StandardMaterial3D>& mat)
-{
+void Planet::set_material(const Ref<StandardMaterial3D> &mat) {
     material = mat;
-    if (mesh_instance && material.is_valid() && mesh->get_surface_count() > 0) {
+    if (mesh_instance && material.is_valid() && mesh->get_surface_count() > 0)
         mesh->surface_set_material(0, material);
-    }
 }
 
-void Planet::generate()
-{
+void Planet::generate() {
     CubeSphereGenerator::generate(radius, resolution, vertices, indices);
 
     if (terrain_filters_array.is_valid()) {
         Array arr = terrain_filters_array->get_filters();
         for (int i = 0; i < arr.size(); i++) {
             Ref<TerrainFilterResource> f = arr[i];
-            if (f.is_valid()) {
+            if (f.is_valid() && f->get_activity() == true)
                 f->apply(vertices, indices);
-            }
         }
     }
 
@@ -96,13 +87,13 @@ void Planet::generate()
     PackedVector2Array uvs_array;
     PackedVector3Array normals_array;
 
-    for (auto &v : vertices)
-    {
+    for (auto &v : vertices) {
         vertices_array.push_back(v.position);
         uvs_array.push_back(v.uv);
         normals_array.push_back(v.normal);
     }
-    for (auto &i : indices) indices_array.push_back(i);
+    for (auto &i : indices)
+        indices_array.push_back(i);
 
     Array meshArrays;
     meshArrays.resize(Mesh::ARRAY_MAX);
@@ -121,5 +112,6 @@ void Planet::generate()
     mesh->clear_surfaces();
     mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, meshArrays);
 
-    if (material.is_valid()) mesh->surface_set_material(0, material);
+    if (material.is_valid())
+        mesh->surface_set_material(0, material);
 }

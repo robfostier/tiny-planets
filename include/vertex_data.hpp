@@ -11,5 +11,4 @@ struct VertexData {
     Vector2 uv;
 };
 
-
 #endif
