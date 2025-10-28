@@ -4,18 +4,21 @@ void Planet::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("set_radius", "radius"), &Planet::set_radius);
     ClassDB::bind_method(D_METHOD("get_radius"), &Planet::get_radius);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius"), "set_radius", "get_radius");
+
     ClassDB::bind_method(D_METHOD("set_resolution", "resolution"), &Planet::set_resolution);
     ClassDB::bind_method(D_METHOD("get_resolution"), &Planet::get_resolution);
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "resolution", PROPERTY_HINT_RANGE, "2,256,1"), "set_resolution", "get_resolution");
+
+    ClassDB::bind_method(D_METHOD("set_terrain_filter_array", "terrain_filter_array"), &Planet::set_terrain_filter_array);
+    ClassDB::bind_method(D_METHOD("get_terrain_filter_array"), &Planet::get_terrain_filter_array);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "terrain_filter_array", PROPERTY_HINT_RESOURCE_TYPE, "TerrainFilterArray"), "set_terrain_filter_array", "get_terrain_filter_array");
+
     ClassDB::bind_method(D_METHOD("set_material", "material"), &Planet::set_material);
     ClassDB::bind_method(D_METHOD("get_material"), &Planet::get_material);
-    ClassDB::bind_method(D_METHOD("set_filters", "filters"), &Planet::set_filters);
-    ClassDB::bind_method(D_METHOD("get_filters"), &Planet::get_filters);
-    ClassDB::bind_method(D_METHOD("generate"), &Planet::generate);
-
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "radius"), "set_radius", "get_radius");
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "resolution", PROPERTY_HINT_RANGE, "2,256,1"), "set_resolution", "get_resolution");
-    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "filters"), "set_filters", "get_filters");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "material", PROPERTY_HINT_RESOURCE_TYPE, "StandardMaterial3D"), "set_material", "get_material");
+
+    ClassDB::bind_method(D_METHOD("generate"), &Planet::generate);
 }
 
 Planet::Planet()
@@ -49,6 +52,23 @@ void Planet::set_resolution(int r)
     generate();
 }
 
+void Planet::set_terrain_filter_array(const Ref<TerrainFilterArray> &arr)
+{
+    if (terrain_filters_array.is_valid()) {
+        terrain_filters_array->disconnect("changed", Callable(this, "generate"));
+    }
+
+    terrain_filters_array = arr;
+
+    if (terrain_filters_array.is_valid()) {
+        terrain_filters_array->connect("changed", Callable(this, "generate"));
+
+        terrain_filters_array->connect_filter_signals();
+    }
+
+    generate();
+}
+
 void Planet::set_material(const Ref<StandardMaterial3D>& mat)
 {
     material = mat;
@@ -57,26 +77,18 @@ void Planet::set_material(const Ref<StandardMaterial3D>& mat)
     }
 }
 
-void Planet::set_filters(const Array &arr) {
-    terrain_filters.clear();
-    for (int i = 0; i < arr.size(); i++) {
-        Ref<TerrainFilterResource> f = arr[i];
-        if (f.is_valid()) terrain_filters.push_back(f);
-    }
-}
-
-Array Planet::get_filters() const {
-    Array arr;
-    for (auto &f : terrain_filters) arr.append(f);
-    return arr;
-}
-
 void Planet::generate()
 {
     CubeSphereGenerator::generate(radius, resolution, vertices, indices);
 
-    for (auto &f : terrain_filters) {
-        f->apply(vertices);
+    if (terrain_filters_array.is_valid()) {
+        Array arr = terrain_filters_array->get_filters();
+        for (int i = 0; i < arr.size(); i++) {
+            Ref<TerrainFilterResource> f = arr[i];
+            if (f.is_valid()) {
+                f->apply(vertices, indices);
+            }
+        }
     }
 
     PackedVector3Array vertices_array;

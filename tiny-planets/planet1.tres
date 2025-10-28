@@ -1,0 +1,20 @@
+[gd_resource type="TerrainFilterArray" load_steps=5 format=3 uid="uid://dlulqi5n6rk3n"]
+
+[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_7dm0k"]
+amplitude = 0.2
+frequency = 0.11
+
+[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_25bn7"]
+amplitude = 0.1
+frequency = 0.395
+
+[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_5kqsv"]
+amplitude = 0.05
+frequency = 1.715
+
+[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_76ycd"]
+amplitude = 0.02
+frequency = 2.92
+
+[resource]
+filters = [SubResource("SimplexNoiseFilter_7dm0k"), SubResource("SimplexNoiseFilter_25bn7"), SubResource("SimplexNoiseFilter_5kqsv"), SubResource("SimplexNoiseFilter_76ycd")]

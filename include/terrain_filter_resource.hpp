@@ -16,7 +16,7 @@ protected:
 public:
     virtual ~TerrainFilterResource() = default;
 
-    virtual void apply(std::vector<VertexData> &vertices) = 0;
+    virtual void apply(std::vector<VertexData> &vertices, std::vector<int> &indices) = 0;
 };
 
 

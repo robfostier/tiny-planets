@@ -7,6 +7,7 @@
 
 #include "planet.hpp"
 #include "terrain_filter_resource.hpp"
+#include "simplex_noise_filter.hpp"
 
 using namespace godot;
 
@@ -16,7 +17,9 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 		return;
 	}
 	GDREGISTER_CLASS(Planet);
+	GDREGISTER_CLASS(TerrainFilterArray);
 	GDREGISTER_ABSTRACT_CLASS(TerrainFilterResource);
+	GDREGISTER_CLASS(SimplexNoiseFilter);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {

@@ -35,6 +35,7 @@ Run the following command to download godot-cpp:
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 env.Append(CPPPATH=["src/", "include/"])
+
 sources = Glob("src/*.cpp")
 
 if env["target"] in ["editor", "template_debug"]:
@@ -54,11 +55,5 @@ library = env.SharedLibrary(
     "tiny-planets/bin/{}/{}".format(env['platform'], lib_filename),
     source=sources,
 )
-
-# for f in ["dll", "lib", "exp"]:
-#     if os.path.exists("bin/windows/libtest.windows.template_debug.x86_64."+f):
-#         copy = env.Install("tiny-planets/bin/windows", "bin/windows/libtest.windows.template_debug.x86_64."+f)
-
-# default_args = [library, copy]
 
 Default(library)
