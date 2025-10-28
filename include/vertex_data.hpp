@@ -9,6 +9,7 @@ struct VertexData {
     Vector3 position;
     Vector3 normal;
     Vector2 uv;
+    int plate_id = -1; // -1 for unassigned, assigned using PlateTectonicFilter
 };
 
 #endif

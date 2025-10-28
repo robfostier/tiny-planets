@@ -73,6 +73,7 @@ void Planet::set_material(const Ref<StandardMaterial3D> &mat) {
 void Planet::generate() {
     CubeSphereGenerator::generate(radius, resolution, vertices, indices);
 
+    // Apply terrain filters
     if (terrain_filters_array.is_valid()) {
         Array arr = terrain_filters_array->get_filters();
         for (int i = 0; i < arr.size(); i++) {
@@ -82,6 +83,7 @@ void Planet::generate() {
         }
     }
 
+    // Generate MeshArray for Godot
     PackedVector3Array vertices_array;
     PackedInt32Array indices_array;
     PackedVector2Array uvs_array;
@@ -95,12 +97,26 @@ void Planet::generate() {
     for (auto &i : indices)
         indices_array.push_back(i);
 
+    PackedColorArray colors_array;
+    colors_array.resize(vertices.size());
+
+    for (int i = 0; i < vertices.size(); i++) {
+        int plate_id = vertices[i].plate_id;
+        
+        float r = Math::fmod(Math::sin(plate_id * 12.9898f) * 43758.5453f, 1.0f);
+        float g = Math::fmod(Math::sin(plate_id * 78.233f) * 96234.5453f, 1.0f);
+        float b = Math::fmod(Math::sin(plate_id * 45.164f) * 12345.6789f, 1.0f);
+
+        colors_array[i] = Color(r, g, b);
+    }
+
     Array meshArrays;
     meshArrays.resize(Mesh::ARRAY_MAX);
     meshArrays[Mesh::ARRAY_VERTEX] = vertices_array;
     meshArrays[Mesh::ARRAY_INDEX] = indices_array;
     meshArrays[Mesh::ARRAY_TEX_UV] = uvs_array;
     meshArrays[Mesh::ARRAY_NORMAL] = normals_array;
+    meshArrays[Mesh::ARRAY_COLOR] = colors_array;
 
     if (mesh.is_null()) {
         mesh.instantiate();

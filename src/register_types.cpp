@@ -8,6 +8,7 @@
 #include "planet.hpp"
 #include "terrain_filter_resource.hpp"
 #include "simplex_noise_filter.hpp"
+#include "plate_tectonic_filter.hpp"
 
 using namespace godot;
 
@@ -20,6 +21,7 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
 	GDREGISTER_CLASS(TerrainFilterArray);
 	GDREGISTER_ABSTRACT_CLASS(TerrainFilterResource);
 	GDREGISTER_CLASS(SimplexNoiseFilter);
+	GDREGISTER_CLASS(PlateTectonicFilter);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {

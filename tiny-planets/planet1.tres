@@ -1,9 +1,10 @@
 [gd_resource type="TerrainFilterArray" load_steps=2 format=3 uid="uid://dlulqi5n6rk3n"]
 
-[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_7dm0k"]
-amplitude = 0.48
-frequency = 0.07
-octaves = 8.0
+[sub_resource type="PlateTectonicFilter" id="PlateTectonicFilter_25bn7"]
+plate_jitter_strength = 0.05
+plate_noise_amplitude = 0.23
+plate_noise_frequency = 0.8
+octaves = 4
 
 [resource]
-filters = [SubResource("SimplexNoiseFilter_7dm0k")]
+filters = [SubResource("PlateTectonicFilter_25bn7")]

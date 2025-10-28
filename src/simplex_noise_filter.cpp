@@ -39,6 +39,7 @@ void SimplexNoiseFilter::apply(std::vector<VertexData> &vertices,
     FastNoiseLite noise;
     noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
+    // For each octave, multiply freq and divide amplitude by 2
     for (int i = 0; i < octaves; i++) {
         noise.SetFrequency(frequency * pow(2, i));
 
