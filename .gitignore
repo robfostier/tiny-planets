@@ -1,2 +1,4 @@
 *.obj
 src/gen/
+tiny-planets/bin/windows/
+.sconsign.dblite
