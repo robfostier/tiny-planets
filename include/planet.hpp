@@ -11,7 +11,8 @@
 
 #include "cube_sphere_generator.hpp"
 #include "terrain_filter_array.hpp"
-#include "vertex_data.hpp"
+#include "planet_vertex.hpp"
+#include "tectonic_plate.hpp"
 
 using namespace godot;
 
@@ -22,7 +23,7 @@ class Planet : public Node3D {
     Ref<ArrayMesh> mesh;
     MeshInstance3D *mesh_instance = nullptr;
 
-    std::vector<VertexData> vertices;
+    std::vector<PlanetVertex> vertices;
     std::vector<int> indices;
 
     float radius = 1.0f;

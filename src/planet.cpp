@@ -89,25 +89,34 @@ void Planet::generate() {
     PackedVector2Array uvs_array;
     PackedVector3Array normals_array;
 
-    for (auto &v : vertices) {
-        vertices_array.push_back(v.position);
-        uvs_array.push_back(v.uv);
-        normals_array.push_back(v.normal);
+    vertices_array.resize(vertices.size());
+    uvs_array.resize(vertices.size());
+    normals_array.resize(vertices.size());
+
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        vertices_array[i] = vertices[i].get_position();
+        uvs_array[i] = vertices[i].get_uv();
+        normals_array[i] = vertices[i].get_normal();
     }
-    for (auto &i : indices)
-        indices_array.push_back(i);
+
+    indices_array.resize(indices.size());
+    for (size_t i = 0; i < indices.size(); ++i)
+        indices_array[i] = indices[i];
 
     PackedColorArray colors_array;
     colors_array.resize(vertices.size());
 
-    for (int i = 0; i < vertices.size(); i++) {
-        int plate_id = vertices[i].plate_id;
-        
-        float r = Math::fmod(Math::sin(plate_id * 12.9898f) * 43758.5453f, 1.0f);
-        float g = Math::fmod(Math::sin(plate_id * 78.233f) * 96234.5453f, 1.0f);
-        float b = Math::fmod(Math::sin(plate_id * 45.164f) * 12345.6789f, 1.0f);
-
-        colors_array[i] = Color(r, g, b);
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        auto plate_ptr = vertices[i].get_plate();
+        if (plate_ptr) {
+            int plate_id = plate_ptr->id;
+            float r = Math::fmod(Math::sin(plate_id * 12.9898f) * 43758.5453f, 1.0f);
+            float g = Math::fmod(Math::sin(plate_id * 78.233f) * 96234.5453f, 1.0f);
+            float b = Math::fmod(Math::sin(plate_id * 45.164f) * 12345.6789f, 1.0f);
+            colors_array[i] = Color(r, g, b);
+        } else {
+            colors_array[i] = Color(0.5f, 0.5f, 0.5f);
+        }
     }
 
     Array meshArrays;

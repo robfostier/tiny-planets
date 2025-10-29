@@ -20,21 +20,24 @@ void SimplexNoiseFilter::_bind_methods() {
 }
 
 void SimplexNoiseFilter::set_amplitude(float value) {
+    if (Math::is_equal_approx(amplitude, value)) return;
     amplitude = value;
     emit_changed();
 }
 
 void SimplexNoiseFilter::set_frequency(float value) {
+    if (Math::is_equal_approx(frequency, value)) return;
     frequency = value;
     emit_changed();
 }
 
 void SimplexNoiseFilter::set_octaves(int value) {
+    if (octaves == value) return;
     octaves = value;
     emit_changed();
 }
 
-void SimplexNoiseFilter::apply(std::vector<VertexData> &vertices,
+void SimplexNoiseFilter::apply(std::vector<PlanetVertex> &vertices,
                                std::vector<int> &indices) {
     FastNoiseLite noise;
     noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -43,10 +46,11 @@ void SimplexNoiseFilter::apply(std::vector<VertexData> &vertices,
     for (int i = 0; i < octaves; i++) {
         noise.SetFrequency(frequency * pow(2, i));
 
-        for (auto &v : vertices) {
-            float n = noise.GetNoise(v.position.x, v.position.y, v.position.z);
-            v.position += v.normal * n * amplitude / pow(2, i);
-            v.normal = v.position.normalized();
+        for (auto &vertex : vertices) {
+            Vector3 current_pos = vertex.get_position();
+            float n = noise.GetNoise(current_pos.x, current_pos.y, current_pos.z);
+            vertex.set_position(current_pos + vertex.get_normal() * n * amplitude / (pow(2, 1)));
+            // vertex.set_normal(vertex.get_position().normalized());
         }
     }
 }

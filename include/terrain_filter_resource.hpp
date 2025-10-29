@@ -1,7 +1,7 @@
 #ifndef TERRAIN_FILTER_RESOURCE_HPP
 #define TERRAIN_FILTER_RESOURCE_HPP
 
-#include "vertex_data.hpp"
+#include "planet_vertex.hpp"
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <vector>
@@ -19,7 +19,7 @@ class TerrainFilterResource : public Resource {
     void set_activity(const bool &activity);
     bool get_activity(void) const { return b_is_active; }
 
-    virtual void apply(std::vector<VertexData> &vertices,
+    virtual void apply(std::vector<PlanetVertex> &vertices,
                        std::vector<int> &indices) = 0;
 };
 

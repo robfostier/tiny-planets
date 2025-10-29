@@ -3,7 +3,7 @@
 
 #include "fastnoiselite/FastNoiseLite.h"
 #include "terrain_filter_resource.hpp"
-#include "vertex_data.hpp"
+#include "planet_vertex.hpp"
 #include <godot_cpp/classes/resource.hpp>
 #include <vector>
 
@@ -26,7 +26,7 @@ class SimplexNoiseFilter : public TerrainFilterResource {
     void set_octaves(int value);
     float get_octaves() const { return octaves; }
 
-    virtual void apply(std::vector<VertexData> &vertices,
+    virtual void apply(std::vector<PlanetVertex> &vertices,
                        std::vector<int> &indices) override;
 };
 
