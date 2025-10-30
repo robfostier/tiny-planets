@@ -9,28 +9,28 @@ panorama = ExtResource("1_ig7tw")
 sky_material = SubResource("PanoramaSkyMaterial_0xm2m")
 
 [sub_resource type="Environment" id="Environment_1bvp3"]
-background_mode = 2
 sky = SubResource("Sky_h2yge")
 
-[sub_resource type="PlateTectonicFilter" id="PlateTectonicFilter_lquwl"]
-seed = 3
+[sub_resource type="PlateTectonicFilter" id="PlateTectonicFilter_ig7tw"]
+seed = 12
 plate_count = 20
-plate_noise_amplitude = 0.17
-plate_noise_frequency = 1.03
+plate_noise_amplitude = 0.1
+plate_noise_frequency = 2.0
 plate_noise_octaves = 3
 continental_plate_ratio = 0.3
-elevation_scale = 0.5
+continentalness_threshold = 0.01
 
-[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_7mycd"]
-amplitude = 0.2
+[sub_resource type="SimplexNoiseFilter" id="SimplexNoiseFilter_ig7tw"]
+amplitude = 0.05
 frequency = 0.1
 octaves = 4.0
 
 [sub_resource type="TerrainFilterArray" id="TerrainFilterArray_272bh"]
-filters = [SubResource("PlateTectonicFilter_lquwl"), SubResource("SimplexNoiseFilter_7mycd")]
+filters = [SubResource("PlateTectonicFilter_ig7tw"), SubResource("SimplexNoiseFilter_ig7tw")]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5vw27"]
-albedo_color = Color(0.10980392, 0.41960785, 0.27058825, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ig7tw"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.14901961, 0.627451, 0.19607843, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kek77"]
 albedo_color = Color(0.16078432, 0.6392157, 1, 1)
@@ -38,7 +38,7 @@ albedo_color = Color(0.16078432, 0.6392157, 1, 1)
 [node name="Node3D" type="Node3D"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 0, 0)
+transform = Transform3D(0.64948785, 0.53766423, -0.53766423, 0, 0.7071068, 0.7071068, 0.760372, -0.4592573, 0.4592573, 0, 0, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1bvp3")
@@ -47,8 +47,12 @@ environment = SubResource("Environment_1bvp3")
 radius = 10.0
 resolution = 100
 terrain_filter_array = SubResource("TerrainFilterArray_272bh")
-material = SubResource("StandardMaterial3D_5vw27")
+material = SubResource("StandardMaterial3D_ig7tw")
 
 [node name="Water" type="Planet" parent="."]
-radius = 10.0
+radius = 10.05
+resolution = 100
 material = SubResource("StandardMaterial3D_kek77")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.32320017, 0.21403548, -0.9218083, 0.00302925, 0.97431606, 0.2251652, 0.9463259, 0.06998102, -0.3155474, -23.546883, 6.395862, -7.900087)

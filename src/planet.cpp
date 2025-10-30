@@ -1,4 +1,5 @@
 #include "planet.hpp"
+#include <algorithm>
 
 void Planet::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_radius", "radius"), &Planet::set_radius);
@@ -73,6 +74,8 @@ void Planet::set_material(const Ref<StandardMaterial3D> &mat) {
 void Planet::generate() {
     CubeSphereGenerator::generate(radius, resolution, vertices, indices);
 
+    compute_neighbours();
+
     // Apply terrain filters
     if (terrain_filters_array.is_valid()) {
         Array arr = terrain_filters_array->get_filters();
@@ -106,17 +109,54 @@ void Planet::generate() {
     PackedColorArray colors_array;
     colors_array.resize(vertices.size());
 
+    // VERTEX CONTINENTALNESS VIZ
+    // for (size_t i = 0; i < vertices.size(); ++i) {
+    //     auto plate_ptr = vertices[i].get_plate();
+    //     if (plate_ptr) {
+    //         float continentalness = vertices[i].get_continentalness();
+    //         colors_array[i] = Color(continentalness, continentalness, continentalness);
+    //     } else {
+    //         colors_array[i] = Color(0.0f, 1.0f, 0.0f);
+    //     }
+    // }
+
+    // PLATE ID VIZ
+    // for (size_t i = 0; i < vertices.size(); ++i) {
+    //     auto plate_ptr = vertices[i].get_plate();
+    //     if (plate_ptr) {
+    //         int plate_id = plate_ptr->id;
+    //         float r = Math::fmod(Math::sin(plate_id * 12.9898f) * 43758.5453f, 1.0f);
+    //         float g = Math::fmod(Math::sin(plate_id * 78.233f) * 96234.5453f, 1.0f);
+    //         float b = Math::fmod(Math::sin(plate_id * 45.164f) * 12345.6789f, 1.0f);
+    //         colors_array[i] = Color(r, g, b);
+    //     } else {
+    //         colors_array[i] = Color(0.5f, 0.5f, 0.5f);
+    //     }
+    // }
+
+    // ELEVATION VIZ
     for (size_t i = 0; i < vertices.size(); ++i) {
-        auto plate_ptr = vertices[i].get_plate();
-        if (plate_ptr) {
-            int plate_id = plate_ptr->id;
-            float r = Math::fmod(Math::sin(plate_id * 12.9898f) * 43758.5453f, 1.0f);
-            float g = Math::fmod(Math::sin(plate_id * 78.233f) * 96234.5453f, 1.0f);
-            float b = Math::fmod(Math::sin(plate_id * 45.164f) * 12345.6789f, 1.0f);
-            colors_array[i] = Color(r, g, b);
+        float dist = vertices[i].get_position().length();
+
+        // Normalise grossièrement la distance autour du rayon moyen
+        float t = std::clamp((dist - radius * 0.98f) / (radius * 0.04f), 0.0f, 1.0f);
+
+        Color color;
+        if (t < 0.3f) {
+            // Océan → sable
+            color = Color(0.0f + t, 0.2f + t * 0.5f, 0.5f);
+        } else if (t < 0.6f) {
+            // Sable → terre
+            color = Color(0.6f, 0.45f + (t - 0.3f) * 0.3f, 0.2f);
+        } else if (t < 0.9f) {
+            // Terre → pierre
+            color = Color(0.4f + (t - 0.6f) * 0.3f, 0.4f + (t - 0.6f) * 0.3f, 0.4f);
         } else {
-            colors_array[i] = Color(0.5f, 0.5f, 0.5f);
+            // Neige
+            color = Color(0.9f, 0.9f, 0.95f);
         }
+
+        colors_array[i] = color;
     }
 
     Array meshArrays;
@@ -139,4 +179,43 @@ void Planet::generate() {
 
     if (material.is_valid())
         mesh->surface_set_material(0, material);
+}
+
+void Planet::compute_neighbours() {
+    const float epsilon = 1e-6f; // vertex fusion tolerance
+
+    // add every neighbour
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        int a = indices[i];
+        int b = indices[i + 1];
+        int c = indices[i + 2];
+
+        vertices[a].add_neighbour(&vertices[b]);
+        vertices[a].add_neighbour(&vertices[c]);
+
+        vertices[b].add_neighbour(&vertices[a]);
+        vertices[b].add_neighbour(&vertices[c]);
+
+        vertices[c].add_neighbour(&vertices[a]);
+        vertices[c].add_neighbour(&vertices[b]);
+    }
+
+    // add neighbours on unwelded wedges EXPENSIIIIIIVE O(n²)
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        PlanetVertex &v1 = vertices[i];
+        for (size_t j = i + 1; j < vertices.size(); ++j) {
+            PlanetVertex &v2 = vertices[j];
+            if ((v1.get_position() - v2.get_position()).length_squared() < epsilon * epsilon) {
+                v1.add_neighbour(&v2);
+                v2.add_neighbour(&v1);
+            }
+        }
+    }
+
+    // rm dupes (vector -> set -> vector)
+    for (auto &vertex : vertices) {
+        std::unordered_set<PlanetVertex*> unique_set(vertex.get_neighbours().begin(), vertex.get_neighbours().end());
+        std::vector<PlanetVertex*> neighbours(unique_set.begin(), unique_set.end());
+        vertex.set_neighbours(neighbours);
+    }
 }

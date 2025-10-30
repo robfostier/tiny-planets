@@ -10,7 +10,7 @@ enum PlateType { OCEANIC, CONTINENTAL };
 struct Plate {
     uint32_t id;
     Vector3 center;
-    Vector3 velocity;
+    Vector3 angular_velocity;
     PlateType type;
 };
 

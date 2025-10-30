@@ -8,6 +8,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include "cube_sphere_generator.hpp"
 #include "terrain_filter_array.hpp"
@@ -56,6 +57,8 @@ class Planet : public Node3D {
     Ref<StandardMaterial3D> get_material() const { return material; }
 
     void generate();
+
+    void compute_neighbours();
 };
 
 #endif

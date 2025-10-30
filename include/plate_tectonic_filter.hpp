@@ -6,8 +6,12 @@
 #include "tectonic_plate.hpp"
 #include <godot_cpp/classes/random_number_generator.hpp>
 #include <godot_cpp/classes/resource.hpp>
+#include <godot_cpp/core/class_db.hpp>
 #include <memory>
 #include <vector>
+#include <unordered_set>
+#include <cmath>
+#include <algorithm>
 
 
 
@@ -19,13 +23,14 @@ class PlateTectonicFilter : public TerrainFilterResource {
     uint32_t seed = 0;
 
     int plate_count = 12;
-    float plate_jitter_strength = 0.0f;
     FastNoiseLite plate_noise;
     float plate_noise_amplitude = 0.01f;
     float plate_noise_frequency = 0.01f;
     int plate_noise_octaves = 1;
 
     float continental_plate_ratio = 0.5f;
+
+    float continentalness_threshold = 0.0f;
 
     float elevation_scale = 1.0f;
     float divergence_strength = 1.0f;
@@ -47,8 +52,6 @@ class PlateTectonicFilter : public TerrainFilterResource {
 
     void set_plate_count(int value);
     int get_plate_count() const { return plate_count; }
-    void set_plate_jitter_strength(float value);
-    float get_plate_jitter_strength() const { return plate_jitter_strength; }
     void set_plate_noise_amplitude(float value);
     float get_plate_noise_amplitude() const { return plate_noise_amplitude; }
     void set_plate_noise_frequency(float value);
@@ -59,6 +62,9 @@ class PlateTectonicFilter : public TerrainFilterResource {
     void set_continental_plate_ratio(float value);
     float get_continental_plate_ratio() const { return continental_plate_ratio; }
 
+    void set_continentalness_threshold(float value);
+    float get_continentalness_threshold() const { return continentalness_threshold; }
+
     void set_elevation_scale(float value);
     float get_elevation_scale() const { return elevation_scale; }
     void set_divergence_strength(float value);
@@ -68,6 +74,8 @@ class PlateTectonicFilter : public TerrainFilterResource {
 
     virtual void apply(std::vector<PlanetVertex> &vertices,
                        std::vector<int> &indices) override;
+
+    std::shared_ptr<Plate> find_closest_plate(const PlanetVertex &vertex);
 };
 
 #endif
